@@ -25,6 +25,8 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 	@Autowired
 	private JwtUtil jwtTokenUtil;
 
+	@Autowired
+	CustomUserDetailsService customUserDetailsService;
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
@@ -33,10 +35,13 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and
 			// get  only the Token
 			String jwtToken = extractJwtFromRequest(request);
-
+// TODO: 17/08/2021 Errores aqui
 			if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
+//				UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
+//						jwtTokenUtil.getRolesFromToken(jwtToken));
 				UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
 						jwtTokenUtil.getRolesFromToken(jwtToken));
+
 
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());

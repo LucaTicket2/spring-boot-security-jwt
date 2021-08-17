@@ -1,12 +1,9 @@
 package com.javainuse.springbootsecurity.config;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.javainuse.springbootsecurity.model.UserDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,81 +22,81 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+@Slf4j
 @Service
 public class JwtUtil {
 
-	private String secret;
-	private int jwtExpirationInMs;
+    private String secret;
+    private int jwtExpirationInMs;
 
-	@Value("${jwt.secret}")
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
+    @Value("${jwt.secret}")
+    public void setSecret(String secret) {
+        this.secret = secret;
+    }
 
-	@Value("${jwt.expirationDateInMs}")
-	public void setJwtExpirationInMs(int jwtExpirationInMs) {
-		this.jwtExpirationInMs = jwtExpirationInMs;
-	}
+    @Value("${jwt.expirationDateInMs}")
+    public void setJwtExpirationInMs(int jwtExpirationInMs) {
+        this.jwtExpirationInMs = jwtExpirationInMs;
+    }
 
-	public String generateToken(UserDetails userDetails) {
-		Map<String, Object> claims = new HashMap<>();
+    public String generateToken(UserDetails userDetails) {
+        Map<String, Object> claims = new HashMap<>();
 
-		Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
+        Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
 
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_ADMIN"))) {
-			claims.put("isAdmin", true);
-		}
-		if (roles.contains(new SimpleGrantedAuthority("ROLE_USER"))) {
-			claims.put("isUser", true);
-		}
-		
-		return doGenerateToken(claims, userDetails.getUsername(),userDetails.getAuthorities());
-	}
+        if (roles.contains(new SimpleGrantedAuthority("ADMIN"))) {
+            claims.put("isAdmin", true);
+        }
+        if (roles.contains(new SimpleGrantedAuthority("USER"))) {
+            claims.put("isUser", true);
+        }
+        claims.put("UserDetails", userDetails);
+        return doGenerateToken(claims, userDetails);
+    }
 
-	// TODO: 13/08/2021 Crear DTO para generar el token con el JSON necesario en vez de subject
-	private String doGenerateToken(Map<String, Object> claims, String subject, Collection<? extends GrantedAuthority> authorities) {
-		return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
+    private String doGenerateToken(Map<String, Object> claims, UserDetails subject) {
+        return Jwts.builder()
+                .setClaims(claims).
+                setSubject(subject.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).
+                setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .claim("user-details", subject)
+                .compact();
 
 
-	}
+    }
 
-	public boolean validateToken(String authToken) {
-		try {
-			Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
-			return true;
-		} catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
-			throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
-		} catch (ExpiredJwtException ex) {
-			throw ex;
-		}
+    public boolean validateToken(String authToken) {
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
+            return true;
+        } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
+        } catch (ExpiredJwtException ex) {
+            throw ex;
+        }
 
-	}
+    }
 
-	public String getUsernameFromToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-		return claims.getSubject();
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+//        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
+//hola?
+//        return (String) userDetails.get(1);
+        return claims.getSubject();
 
-	}
+    }
 
-	public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-
-		List<SimpleGrantedAuthority> roles = null;
-
-		Boolean isAdmin = claims.get("isAdmin", Boolean.class);
-		Boolean isUser = claims.get("isUser", Boolean.class);
-
-		if (isAdmin != null && isAdmin) {
-			roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
-		}
-
-		if (isUser != null && isAdmin) {
-			roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
-		}
-		return roles;
-
-	}
+    public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
+        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        List<SimpleGrantedAuthority> roles = new ArrayList<>();
+        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
+        List authorities = (List) userDetails.get("authorities");
+        LinkedHashMap<Object, String> rolMap = (LinkedHashMap) authorities.get(0);
+        for (String value : rolMap.values()) {
+            roles.add(new SimpleGrantedAuthority(value));
+        }
+        return roles;
+    }
 
 }
