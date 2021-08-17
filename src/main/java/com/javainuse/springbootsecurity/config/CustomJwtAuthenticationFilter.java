@@ -19,19 +19,26 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 
+/**
+ * The type Custom jwt authentication filter.
+ */
 @Component
 public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
 	@Autowired
 	private JwtUtil jwtTokenUtil;
 
+	/**
+	 * The Custom user details service.
+	 */
 	@Autowired
 	CustomUserDetailsService customUserDetailsService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 
-		 try{
+		try {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and
 			// get  only the Token
 			String jwtToken = extractJwtFromRequest(request);
@@ -52,14 +59,11 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 			} else {
 				System.out.println("Cannot set the Security Context");
 			}
-		 }catch(ExpiredJwtException ex)
-		 {
-			 request.setAttribute("exception", ex);
-		 }
-		 catch(BadCredentialsException ex)
-		 {
-			 request.setAttribute("exception", ex);
-		 }
+		}catch(ExpiredJwtException ex) {
+			request.setAttribute("exception", ex);
+		} catch(BadCredentialsException ex) {
+			request.setAttribute("exception", ex);
+		}
 		chain.doFilter(request, response);
 	}
 

@@ -22,6 +22,10 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+
+/**
+ * The type Jwt util.
+ */
 @Slf4j
 @Service
 public class JwtUtil {
@@ -29,16 +33,32 @@ public class JwtUtil {
     private String secret;
     private int jwtExpirationInMs;
 
+    /**
+     * Sets secret.
+     *
+     * @param secret the secret
+     */
     @Value("${jwt.secret}")
     public void setSecret(String secret) {
         this.secret = secret;
     }
 
+    /**
+     * Sets jwt expiration in ms.
+     *
+     * @param jwtExpirationInMs the jwt expiration in ms
+     */
     @Value("${jwt.expirationDateInMs}")
     public void setJwtExpirationInMs(int jwtExpirationInMs) {
         this.jwtExpirationInMs = jwtExpirationInMs;
     }
 
+    /**
+     * Generate token string.
+     *
+     * @param userDetails the user details
+     * @return the string
+     */
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
 
@@ -60,12 +80,18 @@ public class JwtUtil {
                 setSubject(subject.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).
                 setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMs))
                 .signWith(SignatureAlgorithm.HS512, secret)
-                .claim("user-details", subject)
+//                .claim("user-details", subject)
                 .compact();
 
 
     }
 
+    /**
+     * Validate token boolean.
+     *
+     * @param authToken the auth token
+     * @return the boolean
+     */
     public boolean validateToken(String authToken) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
@@ -78,6 +104,12 @@ public class JwtUtil {
 
     }
 
+    /**
+     * Gets username from token.
+     *
+     * @param token the token
+     * @return the username from token
+     */
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 //        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
@@ -86,16 +118,41 @@ public class JwtUtil {
 
     }
 
+    /**
+     * Gets roles from token.
+     *
+     * @param token the token
+     * @return the roles from token
+     */
     public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
+//        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+//        List<SimpleGrantedAuthority> roles = new ArrayList<>();
+//        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
+//        // TODO: 17/08/2021 Error al recoger el claims
+////        List authorities = (List) userDetails.get("authorities");
+////
+//        LinkedHashMap<Object, String> rolMap = (LinkedHashMap) authorities.get(0);
+//        for (String value : rolMap.values()) {
+//            roles.add(new SimpleGrantedAuthority(value));
+//        }
+//        return roles;
+//    }
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-        List<SimpleGrantedAuthority> roles = new ArrayList<>();
-        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
-        List authorities = (List) userDetails.get("authorities");
-        LinkedHashMap<Object, String> rolMap = (LinkedHashMap) authorities.get(0);
-        for (String value : rolMap.values()) {
-            roles.add(new SimpleGrantedAuthority(value));
+
+        List<SimpleGrantedAuthority> roles = null;
+
+        Boolean isAdmin = claims.get("isAdmin", Boolean.class);
+        Boolean isUser = claims.get("isUser", Boolean.class);
+
+        if (isAdmin != null && isAdmin) {
+            roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        }
+
+        if (isUser != null && isAdmin) {
+            roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
         }
         return roles;
     }
+
 
 }

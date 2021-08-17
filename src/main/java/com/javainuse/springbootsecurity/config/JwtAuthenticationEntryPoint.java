@@ -14,12 +14,15 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * The type Jwt authentication entry point.
+ */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
-			AuthenticationException authException) throws IOException, ServletException {
+						 AuthenticationException authException) throws IOException, ServletException {
 
 		response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -29,7 +32,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 		String message;
 
 		if (exception != null) {
-			
+
 			if (exception.getCause() != null) {
 				message = exception.getCause().toString() + " " + exception.getMessage();
 			} else {
@@ -39,7 +42,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 			byte[] body = new ObjectMapper().writeValueAsBytes(Collections.singletonMap("error", message));
 
 			response.getOutputStream().write(body);
-			
+
 
 		} else {
 
