@@ -81,7 +81,6 @@ public class JwtUtil {
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 //        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
-//hola?
 //        return (String) userDetails.get(1);
         return claims.getSubject();
 
