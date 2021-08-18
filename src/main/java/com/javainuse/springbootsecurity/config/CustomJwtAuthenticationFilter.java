@@ -1,12 +1,6 @@
 package com.javainuse.springbootsecurity.config;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,7 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import io.jsonwebtoken.ExpiredJwtException;
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * The type Custom jwt authentication filter.
@@ -42,13 +40,9 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and
 			// get  only the Token
 			String jwtToken = extractJwtFromRequest(request);
-// TODO: 17/08/2021 Errores aqui
 			if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
-//				UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
-//						jwtTokenUtil.getRolesFromToken(jwtToken));
 				UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
 						jwtTokenUtil.getRolesFromToken(jwtToken));
-
 
 				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
 						userDetails, null, userDetails.getAuthorities());

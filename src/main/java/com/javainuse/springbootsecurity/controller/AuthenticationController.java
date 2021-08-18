@@ -1,5 +1,10 @@
 package com.javainuse.springbootsecurity.controller;
 
+import com.javainuse.springbootsecurity.config.CustomUserDetailsService;
+import com.javainuse.springbootsecurity.config.JwtUtil;
+import com.javainuse.springbootsecurity.model.AuthenticationRequest;
+import com.javainuse.springbootsecurity.model.AuthenticationResponse;
+import com.javainuse.springbootsecurity.model.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -12,13 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.javainuse.springbootsecurity.config.CustomUserDetailsService;
-import com.javainuse.springbootsecurity.config.JwtUtil;
-import com.javainuse.springbootsecurity.model.AuthenticationRequest;
-import com.javainuse.springbootsecurity.model.AuthenticationResponse;
-import com.javainuse.springbootsecurity.model.UserDTO;
-
-// TODO: 13/08/2021 getForObject instead of
 
 @RestController
 public class AuthenticationController {

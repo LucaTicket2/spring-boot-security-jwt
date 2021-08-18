@@ -1,26 +1,15 @@
 package com.javainuse.springbootsecurity.config;
 
-import java.util.*;
-
-import com.javainuse.springbootsecurity.model.UserDTO;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+import java.util.*;
 
 
 /**
@@ -125,18 +114,7 @@ public class JwtUtil {
      * @return the roles from token
      */
     public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
-//        Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-//        List<SimpleGrantedAuthority> roles = new ArrayList<>();
-//        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
-//        // TODO: 17/08/2021 Error al recoger el claims
-////        List authorities = (List) userDetails.get("authorities");
-////
-//        LinkedHashMap<Object, String> rolMap = (LinkedHashMap) authorities.get(0);
-//        for (String value : rolMap.values()) {
-//            roles.add(new SimpleGrantedAuthority(value));
-//        }
-//        return roles;
-//    }
+
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
         List<SimpleGrantedAuthority> roles = null;

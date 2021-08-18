@@ -29,6 +29,20 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
+    private static final String[] AUTH_WHITELIST = {
+            // -- Swagger UI v2
+            "/v2/api-docs",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui.html",
+            "/webjars/**",
+            // -- Swagger UI v3 (OpenAPI)
+            "/v3/api-docs/**",
+            "/swagger-ui/**"
+            // other public endpoints of your API may be appended to this array
+    };
 
     /**
      * Password encoder password encoder.
@@ -63,12 +77,17 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                .antMatchers(AUTH_WHITELIST).permitAll()
                 .antMatchers("/hello_admin").hasRole("ADMIN")
                 .antMatchers("/hello_user").hasAnyRole("USER", "ADMIN")
-                .antMatchers("/authenticate", "/register").permitAll().anyRequest().authenticated()
+                .antMatchers("/authenticate", "/register",
+                        "http://localhost:3333/purchase-ticket"
+                ).permitAll().anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).
                 and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).
                 and().addFilterBefore(customJwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+
     }
 
 }
