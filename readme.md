@@ -83,16 +83,13 @@ Token Expirado
 
 ## Endpoints
 
-###
-
-GET http://localhost:8081/getResponse
 
 ###
 
 POST http://localhost:3333/purchase-ticket
 
 ###
-
+DEPRECATED
 POST http://localhost:4444/addUser
 
 ###
