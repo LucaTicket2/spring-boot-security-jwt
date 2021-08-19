@@ -1,6 +1,7 @@
 package com.javainuse.springbootsecurity.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,6 +21,7 @@ import java.io.IOException;
 /**
  * The type Custom jwt authentication filter.
  */
+@Slf4j
 @Component
 public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -35,7 +37,7 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
-
+        log.info("START CustomJwtAuthenticationFilter.doFilterInternal");
 		try {
 			// JWT Token is in the form "Bearer token". Remove Bearer word and
 			// get  only the Token
@@ -49,23 +51,31 @@ public class CustomJwtAuthenticationFilter extends OncePerRequestFilter {
 				// After setting the Authentication in the context, we specify
 				// that the current user is authenticated. So it passes the
 				// Spring Security Configurations successfully.
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+                log.info("END OK CustomJwtAuthenticationFilter.doFilterInternal");
 			} else {
 				System.out.println("Cannot set the Security Context");
 			}
 		}catch(ExpiredJwtException ex) {
-			request.setAttribute("exception", ex);
-		} catch(BadCredentialsException ex) {
-			request.setAttribute("exception", ex);
+            log.info("CustomJwtAuthenticationFilter.doFilterInternal JWT EXPIRADO");
+
+            request.setAttribute("exception", ex);
+        } catch(BadCredentialsException ex) {
+            log.info("CustomJwtAuthenticationFilter.doFilterInternal BAD CREDENTIALS");
+            request.setAttribute("exception", ex);
 		}
 		chain.doFilter(request, response);
 	}
 
 	private String extractJwtFromRequest(HttpServletRequest request) {
+        log.info("START CustomJwtAuthenticationFilter.extractJwtFromRequest");
 		String bearerToken = request.getHeader("Authorization");
 		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-			return bearerToken.substring(7, bearerToken.length());
-		}
+            log.info("RETURN BEARER TOKEN");
+            log.info("END CustomJwtAuthenticationFilter.extractJwtFromRequest");
+            return bearerToken.substring(7, bearerToken.length());
+        }
+        log.info("NULL");
 		return null;
 	}
 

@@ -48,7 +48,7 @@ public class ResourceController {
         log.info("Call TO: PurchaseService.buyTicket");
 
         ResponseEntity<Object> response;
-
+        // TODO: 19/08/2021 deberiamos meterlo en un tryCatch
         ticketDTO = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticketDTO, TicketDTO.class);
 
         response = new ResponseEntity<Object>(ticketDTO, HttpStatus.OK);

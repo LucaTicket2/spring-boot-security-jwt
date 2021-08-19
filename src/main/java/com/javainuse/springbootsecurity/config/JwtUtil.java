@@ -49,6 +49,7 @@ public class JwtUtil {
      * @return the string
      */
     public String generateToken(UserDetails userDetails) {
+        log.info("START JwtUtil.generateToken");
         Map<String, Object> claims = new HashMap<>();
 
         Collection<? extends GrantedAuthority> roles = userDetails.getAuthorities();
@@ -60,10 +61,14 @@ public class JwtUtil {
             claims.put("isUser", true);
         }
         claims.put("UserDetails", userDetails);
+        log.info("END JwtUtil.generateToken");
+
         return doGenerateToken(claims, userDetails);
     }
 
     private String doGenerateToken(Map<String, Object> claims, UserDetails subject) {
+        log.info("Generating Token");
+
         return Jwts.builder()
                 .setClaims(claims).
                 setSubject(subject.getUsername()).setIssuedAt(new Date(System.currentTimeMillis())).
@@ -82,12 +87,18 @@ public class JwtUtil {
      * @return the boolean
      */
     public boolean validateToken(String authToken) {
+        log.info("START JwtUtil.validateToken");
+
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(authToken);
+            log.info("Valid Token");
+            log.info("END JwtUtil.validateToken");
             return true;
         } catch (SignatureException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException ex) {
+            log.info("Bad credentials");
             throw new BadCredentialsException("INVALID_CREDENTIALS", ex);
         } catch (ExpiredJwtException ex) {
+            log.info("Expired Token");
             throw ex;
         }
 
@@ -100,9 +111,9 @@ public class JwtUtil {
      * @return the username from token
      */
     public String getUsernameFromToken(String token) {
+        log.info("START JwtUtil.getUsernameFromToken");
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
-//        LinkedHashMap userDetails = claims.get("user-details", LinkedHashMap.class);
-//        return (String) userDetails.get(1);
+        log.info("END JwtUtil.getUsernameFromToken");
         return claims.getSubject();
 
     }
@@ -115,6 +126,7 @@ public class JwtUtil {
      */
     public List<SimpleGrantedAuthority> getRolesFromToken(String token) {
 
+        log.info("START JwtUtil.getRolesFromToken");
         Claims claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 
         List<SimpleGrantedAuthority> roles = null;
@@ -123,12 +135,15 @@ public class JwtUtil {
         Boolean isUser = claims.get("isUser", Boolean.class);
 
         if (isAdmin != null && isAdmin) {
+            log.info("UserType ADMIN");
             roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
         if (isUser != null && isAdmin) {
+            log.info("UserType USER");
             roles = Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
         }
+        log.info("END JwtUtil.getRolesFromToken");
         return roles;
     }
 
