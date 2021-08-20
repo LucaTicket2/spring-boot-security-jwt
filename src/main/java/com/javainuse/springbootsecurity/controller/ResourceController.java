@@ -48,7 +48,8 @@ public class ResourceController {
 
         ResponseEntity response;
         // TODO: 19/08/2021 deberiamos meterlo en un tryCatch
-//        ticket = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, Ticket.class);
+        ticket = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, Ticket.class);
+        // TODO: 20/08/2021 Modificar para recibir objeto
         response = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, ResponseEntity.class);
 
 
