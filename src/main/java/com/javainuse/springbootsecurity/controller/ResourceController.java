@@ -4,7 +4,6 @@ import com.javainuse.springbootsecurity.config.JwtUtil;
 import com.javainuse.springbootsecurity.model.entities.Ticket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,11 +46,11 @@ public class ResourceController {
     public ResponseEntity<Object> buyTicket(String token, @RequestBody Ticket ticket) {
         log.info("Call TO: PurchaseService.buyTicket");
 
-        ResponseEntity<Object> response;
+        ResponseEntity response;
         // TODO: 19/08/2021 deberiamos meterlo en un tryCatch
-        ticket = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, Ticket.class);
+//        ticket = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, Ticket.class);
+        response = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, ResponseEntity.class);
 
-        response = new ResponseEntity<Object>(ticket, HttpStatus.OK);
 
         return response;
     }

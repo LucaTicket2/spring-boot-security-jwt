@@ -77,9 +77,13 @@ public class SpringSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
+                // TODO: 20/08/2021 Listar eventos
                 .antMatchers(AUTH_WHITELIST).permitAll()
+                // TODO: 20/08/2021 Crear eventos
                 .antMatchers("/hello_admin").hasRole("ADMIN")
+                // TODO: 20/08/2021 getAllTicketsByUser
                 .antMatchers("/hello_user").hasAnyRole("USER", "ADMIN")
+                // TODO: 20/08/2021 en esta cadena se añadirian las que estan .permitAll().anyRequest().authenticated()
                 .antMatchers("/authenticate", "/register",
                         "http://localhost:3333/purchase-ticket"
                 ).permitAll().anyRequest().authenticated()
