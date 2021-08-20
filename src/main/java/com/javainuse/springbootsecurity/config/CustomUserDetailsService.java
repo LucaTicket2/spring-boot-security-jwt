@@ -5,8 +5,6 @@ import com.javainuse.springbootsecurity.model.UserDTO;
 import com.javainuse.springbootsecurity.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,6 +16,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityExistsException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * The type Custom user details service.
@@ -57,23 +56,24 @@ public class CustomUserDetailsService implements UserDetailsService {
      * @param user the user
      * @return the dao user
      */
-    public ResponseEntity<Object> save(UserDTO user) {
+    public DAOUser save(UserDTO user) {
         log.info("START CustomUserDetailsService.save");
         DAOUser newUser = new DAOUser();
-        ResponseEntity response;
+
         try {
 
             newUser.setUsername(user.getUsername());
             newUser.setPassword(bcryptEncoder.encode(user.getPassword()));
-            newUser.setRole(user.getRole());
+            newUser.setRole(user.getRole().toUpperCase(Locale.ROOT));
+            // TODO: 20/08/2021 set reg date
             userDao.save(newUser);
-            response = new ResponseEntity("Usuario creado\n" + userDao.toString(), HttpStatus.CREATED);
+            return newUser;
         } catch (EntityExistsException entityExistsException) {
             log.info("Ya existe un usuario creado con esta cuenta");
-            response = new ResponseEntity("Ya existe el usuario " + user.getUsername(), HttpStatus.CONFLICT);
+            newUser = null;
         }
         log.info("END CustomUserDetailsService.save");
-        return response;
+        return newUser;
     }
 
 }

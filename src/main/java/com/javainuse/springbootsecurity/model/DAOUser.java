@@ -1,6 +1,7 @@
 package com.javainuse.springbootsecurity.model;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 /**
  * The type Dao user.
@@ -18,23 +19,42 @@ public class DAOUser {
 	private String password;
 	@Column
 	private String role;
+	@Column
+	private String nombre;
+	@Column
+	private String apellido;
+	@Column
+	private Date fechaAlta;
 
-	/**
-	 * Gets role.
-	 *
-	 * @return the role
-	 */
-	public String getRole() {
-		return role;
+	@Override
+	public String toString() {
+		return "DAOUser{" +
+				"id=" + id +
+				", username='" + username + '\'' +
+				", password='" + password + '\'' +
+				", role='" + role + '\'' +
+				", nombre='" + nombre + '\'' +
+				", apellido='" + apellido + '\'' +
+				", fechaAlta=" + fechaAlta +
+				'}';
 	}
 
 	/**
-	 * Sets role.
+	 * Gets id.
 	 *
-	 * @param role the role
+	 * @return the id
 	 */
-	public void setRole(String role) {
-		this.role = role;
+	public long getId() {
+		return id;
+	}
+
+	/**
+	 * Sets id.
+	 *
+	 * @param id the id
+	 */
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	/**
@@ -73,4 +93,75 @@ public class DAOUser {
 		this.password = password;
 	}
 
+	/**
+	 * Gets role.
+	 *
+	 * @return the role
+	 */
+	public String getRole() {
+		return role;
+	}
+
+	/**
+	 * Sets role.
+	 *
+	 * @param role the role
+	 */
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	/**
+	 * Gets nombre.
+	 *
+	 * @return the nombre
+	 */
+	public String getNombre() {
+		return nombre;
+	}
+
+	/**
+	 * Sets nombre.
+	 *
+	 * @param nombre the nombre
+	 */
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	/**
+	 * Gets apellido.
+	 *
+	 * @return the apellido
+	 */
+	public String getApellido() {
+		return apellido;
+	}
+
+	/**
+	 * Sets apellido.
+	 *
+	 * @param apellido the apellido
+	 */
+	public void setApellido(String apellido) {
+		this.apellido = apellido;
+	}
+
+	/**
+	 * Gets fecha alta.
+	 *
+	 * @return the fecha alta
+	 */
+	public Date getFechaAlta() {
+		return fechaAlta;
+	}
+
+	/**
+	 * Sets fecha alta.
+	 *
+	 * @param fechaAlta the fecha alta
+	 */
+	public void setFechaAlta(Date fechaAlta) {
+		this.fechaAlta = fechaAlta;
+	}
 }

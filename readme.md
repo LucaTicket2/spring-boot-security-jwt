@@ -83,14 +83,15 @@ Token Expirado
 
 ## Endpoints
 
+Comunicarían con eureka
 
 ###
 
 POST http://localhost:3333/purchase-ticket
 
 ###
-DEPRECATED
-POST http://localhost:4444/addUser
+
+DEPRECATED POST http://localhost:4444/addUser
 
 ###
 

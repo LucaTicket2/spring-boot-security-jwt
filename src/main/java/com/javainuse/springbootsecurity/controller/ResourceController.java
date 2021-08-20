@@ -1,7 +1,7 @@
 package com.javainuse.springbootsecurity.controller;
 
 import com.javainuse.springbootsecurity.config.JwtUtil;
-import com.javainuse.springbootsecurity.model.entities.TicketDTO;
+import com.javainuse.springbootsecurity.model.entities.Ticket;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,14 +44,14 @@ public class ResourceController {
     //	Ejemplo pseudocodigo
     //
     @RequestMapping(value = "/purchase-ticket", method = RequestMethod.POST)
-    public ResponseEntity<Object> buyTicket(String token, @RequestBody TicketDTO ticketDTO) {
+    public ResponseEntity<Object> buyTicket(String token, @RequestBody Ticket ticket) {
         log.info("Call TO: PurchaseService.buyTicket");
 
         ResponseEntity<Object> response;
         // TODO: 19/08/2021 deberiamos meterlo en un tryCatch
-        ticketDTO = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticketDTO, TicketDTO.class);
+        ticket = restTemplate.postForObject(purchaseService + "/purchase-ticket", ticket, Ticket.class);
 
-        response = new ResponseEntity<Object>(ticketDTO, HttpStatus.OK);
+        response = new ResponseEntity<Object>(ticket, HttpStatus.OK);
 
         return response;
     }
